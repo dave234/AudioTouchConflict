@@ -27,20 +27,11 @@
 
 
 @interface ViewController (){
-    
     CADisplayLink *displayLink;
     UIPanGestureRecognizer *panRec;
     UILabel *playerLabel;
-    
     MusicPlayer player;
     MusicSequence sequence;
-    
-    AUGraph audioGraph;
-    AudioComponentInstance  ioUnit;
-    AUNode                  ioNode;
-    AudioComponentInstance  samplerUnit;
-    AUNode                  samplerNode;
-
     MYGLKView *myglkView;
 }
 
@@ -51,6 +42,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    
+    
     myglkView = [[MYGLKView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
     myglkView.enableSetNeedsDisplay = 0;
     [self.view addSubview:myglkView];
@@ -58,16 +51,8 @@
     panRec = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panRecCallback:)];
     [myglkView addGestureRecognizer:panRec];
     
-    playerLabel = [[UILabel alloc]initWithFrame:CGRectMake(40, 40, 100, 100)];
-    playerLabel.textColor = [UIColor whiteColor];
-    [self.view addSubview:playerLabel];
     
-    UIButton *stopPlayButt = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    stopPlayButt.frame = CGRectMake(120, 40, 100, 100);
-    [stopPlayButt setTitle:@"stop/play" forState:UIControlStateNormal];
-    [stopPlayButt addTarget:self action:@selector(stopPlay:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:stopPlayButt];
-    
+    [self addUI];
     
     displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(display)];
     [displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
@@ -106,6 +91,7 @@
         MusicPlayerPreroll(player);
     }
 }
+
 -(void)panRecCallback:(UIPanGestureRecognizer *)rec{
     myglkView.rectOrigin = CGPointAdd(myglkView.rectOrigin, [rec translationInView:rec.view]);
     [rec setTranslation:CGPointZero inView:rec.view];
@@ -147,7 +133,26 @@
 CGPoint CGPointAdd(CGPoint a,CGPoint b){
     return CGPointMake(a.x + b.x, a.y + b.y);
 }
-
+-(void)addUI{
+    playerLabel = [[UILabel alloc]initWithFrame:CGRectMake(40, 40, 100, 40)];
+    playerLabel.textColor = [UIColor whiteColor];
+    [self.view addSubview:playerLabel];
+    
+    UIButton *stopPlayButt = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    stopPlayButt.frame = CGRectMake(120, 40, 100, 100);
+    [stopPlayButt setTitle:@"stop/play" forState:UIControlStateNormal];
+    [stopPlayButt addTarget:self action:@selector(stopPlay:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:stopPlayButt];
+    
+    UIButton *killButt = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    killButt.frame = CGRectMake(120, self.view.frame.size.height - 80, 100, 40);
+    [killButt setTitle:@"KILL" forState:UIControlStateNormal];
+    [killButt addTarget:self action:@selector(kill) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:killButt];
+}
+-(void)kill{
+    exit(0);
+}
 @end
 
 
